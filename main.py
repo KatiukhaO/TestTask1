@@ -1,7 +1,7 @@
 import requests
 import csv
 from bs4 import BeautifulSoup
-from config import URL, HEADER, MAIN_URL
+from config import URL, HEADER, MAIN_URL, file_name
 import re
 
 
@@ -36,9 +36,36 @@ def get_content(html):
 
     return cards
 
+def save_doc(items, path):
+    with open(path, "w", encoding="utf-16") as file:
+        writer = csv.writer(file, delimiter=";")
+        writer.writerow(["Model phones", "Price", "Link by description", "Link by site"])
+        for item in  items:
+            writer.writerow([item["model"], item["price"], item["link_by_model"], item["link_by_site"]])
 
 
 
-print(get_content(get_html(URL)))
+def parser():
+    PAGINATION = int(input("Enter number pages for pagination's : "))
+    html = get_html(URL)
+    if html.status_code == 200:
+        cards = []
+        for page in range(1, PAGINATION+1):
+            print(f"Parsing pages number : {page}")
+            p = f"?p={page}"
+            html = get_html(URL+p)
+            cards.extend(get_content(html))
+            save_doc(cards, file_name)
+        print(f"We have {len(cards)} recording in our file")
+    else:
+        print("Error")
+
+if __name__ == "__main__":
+    parser()
+
+
+
+
+
 
 
