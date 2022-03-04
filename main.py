@@ -1,8 +1,8 @@
-import requests
-import csv
+import requests, re, csv
+import pandas as pd
+from openpyxl.workbook import Workbook
 from bs4 import BeautifulSoup
-from config import URL, HEADER, MAIN_URL, file_name
-import re
+from config import URL, HEADER, MAIN_URL, file_name, file_name_xlsx
 
 
 def get_html(url, params=""):
@@ -36,13 +36,17 @@ def get_content(html):
 
     return cards
 
-def save_doc(items, path):
+def save_doc_csv(items, path):
     with open(path, "w", encoding="utf-16") as file:
-        writer = csv.writer(file, delimiter=";")
+        writer = csv.writer(file, delimiter=",")
         writer.writerow(["Model phones", "Price", "Link by description", "Link by site"])
         for item in  items:
             writer.writerow([item["model"], item["price"], item["link_by_model"], item["link_by_site"]])
 
+
+def save_doc_xls(items, path):
+    z = pd.DataFrame(items)
+    z.to_excel(path, index=False )
 
 
 def parser():
@@ -55,7 +59,8 @@ def parser():
             p = f"?p={page}"
             html = get_html(URL+p)
             cards.extend(get_content(html))
-            save_doc(cards, file_name)
+            save_doc_xls(cards, file_name_xlsx)
+            # save_doc_csv(cards, file_name)
         print(f"We have {len(cards)} recording in our file")
     else:
         print("Error")

@@ -6,3 +6,4 @@ HEADER = {
 MAIN_URL = "comfy.ua"
 
 file_name = "result_work_parser.csv"
+file_name_xlsx = "result_work_parser_xlsx.xlsx"
